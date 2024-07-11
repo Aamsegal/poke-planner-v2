@@ -1,0 +1,8 @@
+.noPageFoundContainer{
+    background-color: #a44848;
+    height: 100%;
+}
+
+.noPageFoundContainer h1{
+    margin: 0;
+}

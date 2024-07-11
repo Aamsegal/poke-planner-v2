@@ -1,0 +1,8 @@
+.homePageContainer{
+    background-color: green;
+    height: 100%;
+}
+
+.homePageContainer h1{
+    margin: 0;
+}
