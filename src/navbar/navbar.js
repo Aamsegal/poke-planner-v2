@@ -9,6 +9,8 @@ import "./navbar.css"
 
 function NavBar(props) {
 
+    const [burgerMenuStatus, setBurgerMenuStatus] = useState(false)
+
     //testing commit for contributions overview on github
 
     const navigate = useNavigate(); //allows sending to other routes through functions
@@ -35,7 +37,9 @@ function NavBar(props) {
                     size="small"
                     sx={{
                         marginLeft: "7px",
-                        marginRight: "7px"
+                        marginRight: "7px",
+                        marginTop: "3px",
+                        marginBottom: "3px"
                     }}
                     onClick={() => navBarNavigation(buttonPath)}
                 >
@@ -47,11 +51,43 @@ function NavBar(props) {
 
     };
 
+    const showHideDropdown = (dropDownChoice) => {
+
+        const updatedState = !burgerMenuStatus;
+
+        setBurgerMenuStatus(prevState => !prevState);
+
+        let navBarButtonContainerElements = document.getElementById("navBarButtonContainer");
+        
+        if(updatedState === false) {
+
+            navBarButtonContainerElements.style.display = "none";
+
+        }else{
+
+            navBarButtonContainerElements.style.display = "flex";
+
+        }
+
+        
+
+    };
+
     return(
 
         <div className="navBarContainer">
 
-            {renderButtons()}
+            <div className="navBarButtonContainer" id="navBarButtonContainer">
+
+                {renderButtons()}
+
+            </div>
+
+            <div className="burgerButton">
+
+                <Button onClick={() => showHideDropdown("press")}>X</Button>
+
+            </div>
 
         </div>
 

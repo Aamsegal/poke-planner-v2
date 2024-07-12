@@ -1,5 +1,32 @@
 
 .navBarContainer{
-    padding-top: 5px;
-    padding-bottom: 5px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    background-color: rgb(48, 48, 48);
+}
+
+.navBarButtonContainer{
+    display: flex;
+    flex-direction: row;
+}
+
+.burgerButton{
+    display: none;
+}
+
+@media(max-width: 600px) {
+
+    .navBarButtonContainer{
+        display: none;
+        position: absolute;
+        flex-direction: column;
+        top: 10px;
+        right: 20px;
+    }
+
+    .burgerButton{
+        display: block;
+    }
+
 }
