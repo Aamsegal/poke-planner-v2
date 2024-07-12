@@ -9,6 +9,8 @@ import "./navbar.css"
 
 function NavBar(props) {
 
+    //testing commit for contributions overview on github
+
     const navigate = useNavigate(); //allows sending to other routes through functions
 
     /* allows navigation to different routes though parameters */
