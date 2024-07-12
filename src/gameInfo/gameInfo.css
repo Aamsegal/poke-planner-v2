@@ -1,0 +1,8 @@
+.gameInfoContainer{
+    background-color: rgb(212, 56, 212);
+    height: 100%;
+}
+
+.gameInfoContainer h1{
+    margin: 0;
+}

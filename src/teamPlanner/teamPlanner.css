@@ -1,0 +1,8 @@
+.teamPlannerContainer{
+    background-color: rgb(81, 81, 255);
+    height: 100%;
+}
+
+.teamPlannerContainer h1{
+    margin: 0;
+}

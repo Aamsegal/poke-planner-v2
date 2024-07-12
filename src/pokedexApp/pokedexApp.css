@@ -1,0 +1,8 @@
+.pokedexAppContainer{
+    background-color: rgb(154, 0, 192);
+    height: 100%;
+}
+
+.pokedexAppContainer h1{
+    margin: 0;
+}
