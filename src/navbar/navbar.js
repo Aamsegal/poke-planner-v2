@@ -1,5 +1,5 @@
 /* ---React Imports--- */
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import { useNavigate } from "react-router-dom";
 
 /* ---MUI Imports--- */
@@ -9,7 +9,13 @@ import "./navbar.css"
 
 function NavBar(props) {
 
-    const [burgerMenuStatus, setBurgerMenuStatus] = useState(false)
+    const [isNavBarVisible, setIsNavBarVisible] = useState(true);
+
+    const [isMobile, setIsMobile] = useState(false);
+
+    const [burgerMenuStatus, setBurgerMenuStatus] = useState(false);
+
+    
 
     //testing commit for contributions overview on github
 
@@ -51,33 +57,47 @@ function NavBar(props) {
 
     };
 
-    const showHideDropdown = (dropDownChoice) => {
+    const showHideDropdown = () => {
 
-        const updatedState = !burgerMenuStatus;
-
-        setBurgerMenuStatus(prevState => !prevState);
-
-        let navBarButtonContainerElements = document.getElementById("navBarButtonContainer");
-        
-        if(updatedState === false) {
-
-            navBarButtonContainerElements.style.display = "none";
-
-        }else{
-
-            navBarButtonContainerElements.style.display = "flex";
-
-        }
-
-        
+        /* toggles true or false */
+        setIsNavBarVisible(!isNavBarVisible);
 
     };
+
+    const checkIfMobile = () => {
+
+        const windowWidth = window.innerWidth;
+
+        /* we set navbar to be visible if we see that the width is larger than 600px */
+        if(windowWidth > 600) {
+            setIsNavBarVisible(true);
+        };
+
+    };
+
+    useEffect(() => {
+
+        const debounceDurationChecker = 25;
+
+        /* creates a timer every time use effect is changed */
+        /* if timer between calls is greater than 25 ms then it runs the function in it */
+        let debounceTimer;
+        const debounceResize = () => {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+                checkIfMobile()
+            },debounceDurationChecker)
+        };
+
+        window.addEventListener("resize", debounceResize);
+
+    },[])
 
     return(
 
         <div className="navBarContainer">
 
-            <div className="navBarButtonContainer" id="navBarButtonContainer">
+            <div className={`navBarButtonContainer ${isNavBarVisible ? "displayedNavBarButton" : "hiddenNavbarButton"}`} id="navBarButtonContainer">
 
                 {renderButtons()}
 
@@ -85,7 +105,13 @@ function NavBar(props) {
 
             <div className="burgerButton">
 
-                <Button onClick={() => showHideDropdown("press")}>X</Button>
+                <Button
+                    onClick={() => showHideDropdown("press")}
+                    variant="contained"
+                    size="small"
+                >
+                    X
+                </Button>
 
             </div>
 

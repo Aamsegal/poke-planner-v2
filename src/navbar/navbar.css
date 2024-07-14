@@ -6,19 +6,29 @@
     background-color: rgb(48, 48, 48);
 }
 
-.navBarButtonContainer{
-    display: flex;
-    flex-direction: row;
-}
-
 .burgerButton{
     display: none;
+}
+
+.displayedNavBarButton{
+    display: flex;
+}
+
+.hiddenNavbarButton{
+    display: none;
+}
+
+@media(min-width: 601px) {
+
+    .navBarButtonContainer{
+        flex-direction: row;
+    }
+
 }
 
 @media(max-width: 600px) {
 
     .navBarButtonContainer{
-        display: none;
         position: absolute;
         flex-direction: column;
         top: 10px;
