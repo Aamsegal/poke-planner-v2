@@ -4,11 +4,22 @@ import React, { useState, useEffect } from "react";
 /* ---MUI Imports--- */
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
+import Tooltip from '@mui/material/Tooltip';
 
 /* ---External Packages */
-import axios from 'axios';
 
 import "./pokedexApp.css";
+
+const Pokedex = require("pokeapi-js-wrapper")
+const customPokedexOptions = {
+    protocol: "https",
+    hostName: "pokeapi.co",
+    versionPath: "/api/v2/",
+    cache: true,
+    timeout: 5 * 1000, // 5s
+    cacheImages: true
+};
+const P = new Pokedex.Pokedex(customPokedexOptions);
 
 function PokedexApp(props){
 
@@ -20,6 +31,7 @@ function PokedexApp(props){
 
     const [pokemonName, setPokemonName] = useState("");
     const [searchedForPokemonApiInfo, setSearchedForPokemonApiInfo] = useState({});
+    const [abilityInfo_State, setAbilityInfo_State] = useState({});
 
     const typeColorChart = {
         "hp": {
@@ -51,29 +63,55 @@ function PokedexApp(props){
     const updatePokemonSearchName = (event) => {
 
         const addition = event.target.value;
-        console.log(addition)
         setPokemonName(addition)
 
     }
+
+    const grabAbilityInfo = async (abilities) => {
+
+        console.log(abilities)
+
+        const abilityInfo = {};
+
+        for(const currentAbilityInfo of abilities) {
+
+            const currentAbilityName = currentAbilityInfo.ability.name;
+
+            try{
+    
+                const searchForAbilityApiResponse = await P.getAbilityByName(currentAbilityName);
+
+                const abilityText = searchForAbilityApiResponse["effect_entries"][1].effect;
+
+                abilityInfo[currentAbilityName] = abilityText;
+    
+            }catch(error) {
+
+                console.log(error)
+    
+            }
+
+        }
+
+        setAbilityInfo_State(abilityInfo)
+
+    };
 
     const searchForPokemon = async () => {
 
         console.log(`searchForPokemon() - ${pokemonName}`)
 
-        const lowerCaseName = pokemonName.toLocaleLowerCase()
+        const lowerCaseName = pokemonName.toLocaleLowerCase();
 
         try{
 
-            const searchForPokemonApiConfig = {
-                url: `https://pokeapi.co/api/v2/pokemon/${lowerCaseName}/`,
-                method: "GET"
-            };
+            const searchForPokemonApiResponse = await P.getPokemonByName(lowerCaseName);
 
-            const searchForPokemonApiResponse = await axios.request(searchForPokemonApiConfig);
+            grabAbilityInfo(searchForPokemonApiResponse.abilities)
+            
+            setSearchedForPokemonApiInfo(searchForPokemonApiResponse)
 
-            setSearchedForPokemonApiInfo(searchForPokemonApiResponse.data)
-
-        }catch(error) {
+        }catch(error){
 
             console.log(error)
 
@@ -105,15 +143,23 @@ function PokedexApp(props){
 
                         <h3 className="pokemonDataHeaders">Ability List</h3>
 
-                        {searchedForPokemonApiInfo.abilities.map((abilityInfo) => {
+                        {searchedForPokemonApiInfo.abilities.map((currentAbilityInfo) => {
+
+                            const abilityName = currentAbilityInfo.ability.name;
+                            const pokemonName = searchedForPokemonApiInfo.name;
 
                             return (
-                                <p 
-                                    id={`${searchedForPokemonApiInfo.name}_${abilityInfo.ability.name}`}
-                                    className="pokemonDataText"
-                                >
-                                    {abilityInfo.ability.name}
-                                </p>
+
+                                <Tooltip title={abilityInfo_State[abilityName] === undefined ? "ChockyMilk": abilityInfo_State[abilityName]}>
+
+                                    <p 
+                                        id={`${pokemonName}_${abilityName}`}
+                                        className="pokemonDataText"
+                                    >
+                                        {currentAbilityInfo.ability.name}
+                                    </p>
+
+                                </Tooltip>
                             )
 
                         })}
@@ -128,6 +174,7 @@ function PokedexApp(props){
                             return (
                                 <p 
                                     id={`${searchedForPokemonApiInfo.name}_${types.type.name}`}
+                                    key={`${searchedForPokemonApiInfo.name}_${types.type.name}`}
                                     className="pokemonDataText"
                                 >
                                     {types.type.name}
