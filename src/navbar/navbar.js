@@ -1,5 +1,5 @@
 /* ---React Imports--- */
-import React, {useState, useEffect} from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
 /* ---MUI Imports--- */
@@ -9,13 +9,20 @@ import "./navbar.css"
 
 function NavBar(props) {
 
-    const [isNavBarVisible, setIsNavBarVisible] = useState(true);
+    const refDiv = useRef(null);
+
+    const [isNavBarVisible, setIsNavBarVisible] = useState(false);
 
     const [isMobile, setIsMobile] = useState(false);
 
     const [burgerMenuStatus, setBurgerMenuStatus] = useState(false);
 
-    
+    const buttonStyle = {
+        marginLeft: "7px",
+        marginRight: "7px",
+        marginTop: "3px",
+        marginBottom: "3px"
+    };
 
     //testing commit for contributions overview on github
 
@@ -24,7 +31,8 @@ function NavBar(props) {
     /* allows navigation to different routes though parameters */
     const navBarNavigation = (path) => {
 
-        navigate(path)
+        navigate(path);
+        setIsNavBarVisible(false)
 
     };
 
@@ -38,15 +46,11 @@ function NavBar(props) {
             const buttonPath = buttonInfoObject[currentButtonKey]
 
             return (
-                <Button 
+                <Button
+                    key={`${buttonPath}_Key`}
                     variant="contained"
                     size="small"
-                    sx={{
-                        marginLeft: "7px",
-                        marginRight: "7px",
-                        marginTop: "3px",
-                        marginBottom: "3px"
-                    }}
+                    sx={buttonStyle}
                     onClick={() => navBarNavigation(buttonPath)}
                 >
                     {currentButtonKey}
@@ -60,7 +64,7 @@ function NavBar(props) {
     const showHideDropdown = () => {
 
         /* toggles true or false */
-        setIsNavBarVisible(!isNavBarVisible);
+        setIsNavBarVisible((isNavBarVisible) => !isNavBarVisible);
 
     };
 
@@ -69,15 +73,30 @@ function NavBar(props) {
         const windowWidth = window.innerWidth;
 
         /* we set navbar to be visible if we see that the width is larger than 600px */
-        if(windowWidth > 600) {
+        if(windowWidth > 450) {
+
             setIsNavBarVisible(true);
-        };
+
+        }else{
+
+            setIsNavBarVisible(false);
+
+        }
 
     };
 
     useEffect(() => {
 
-        const debounceDurationChecker = 25;
+        const updateHeight = () => {
+            if (refDiv.current) {
+                props.setHeight(refDiv.current.offsetHeight);
+            }
+        };
+
+        updateHeight();
+        window.addEventListener('resize', updateHeight);
+
+        const debounceDurationChecker = 0;
 
         /* creates a timer every time use effect is changed */
         /* if timer between calls is greater than 25 ms then it runs the function in it */
@@ -86,36 +105,44 @@ function NavBar(props) {
             clearTimeout(debounceTimer);
             debounceTimer = setTimeout(() => {
                 checkIfMobile()
-            },debounceDurationChecker)
+            }, debounceDurationChecker)
         };
 
         window.addEventListener("resize", debounceResize);
 
-    },[])
+    }, [props.setHeight])
 
     return(
 
-        <div className="navBarContainer">
+        <nav ref={refDiv} className="navBarContainer" id="navBarContainer">
 
-            <div className={`navBarButtonContainer ${isNavBarVisible ? "displayedNavBarButton" : "hiddenNavbarButton"}`} id="navBarButtonContainer">
-
-                {renderButtons()}
-
+            <div className="pokePlannerTitleContainer navBarElement">
+                <h1 className="pokePlannerTitleHeader">Poke-Planner</h1>
             </div>
 
-            <div className="burgerButton">
+            <div className="burgerButton navBarElement">
 
                 <Button
-                    onClick={() => showHideDropdown("press")}
+                    className="navBarToggleButton"
+                    onClick={() => showHideDropdown()}
                     variant="contained"
                     size="small"
+                    sx={buttonStyle}
                 >
                     X
                 </Button>
 
             </div>
 
-        </div>
+            <div className={`navBarButtonContainer ${isNavBarVisible ? "isOpen" : ""} navBarElement`} id="navBarButtonContainer">
+
+                {renderButtons()}
+
+            </div>
+
+            
+
+        </nav>
 
     );
 

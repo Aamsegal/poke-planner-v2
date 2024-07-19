@@ -12,6 +12,8 @@ import './App.css';
 
 function App() {
 
+    const [height, setHeight] = useState(0);
+
     const pathNames = {
         "Home": "/",
         "Pokedex": "/pokedex",
@@ -27,22 +29,28 @@ function App() {
 
                 <NavBar 
                     pathInfo={pathNames}
+                    setHeight={setHeight}
                 />
 
-                <Routes>
+                <div className="routeContainer" style={{marginTop: `${height}px`}}>
 
-                    <Route path={pathNames["Home"]} Component={HomePage}/>
+                    <Routes>
 
-                    <Route path={pathNames["Pokedex"]} Component={PokedexApp}/>
+                        <Route path={pathNames["Home"]} Component={HomePage}/>
 
-                    <Route path={pathNames["Team Planner"]} Component={TeamPlanner}/>
+                        <Route path={pathNames["Pokedex"]} Component={PokedexApp}/>
 
-                    <Route path={pathNames["Game Info"]} Component={GameInfo}/>
+                        <Route path={pathNames["Team Planner"]} Component={TeamPlanner}/>
 
-                    <Route path="*" Component={NoPageFound}/>
+                        <Route path={pathNames["Game Info"]} Component={GameInfo}/>
+
+                        <Route path="*" Component={NoPageFound}/>
 
 
-                </Routes>
+                    </Routes>
+                    
+                </div>
+
             
             </Router>
         

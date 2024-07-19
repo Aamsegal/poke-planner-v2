@@ -14,6 +14,10 @@
     flex-direction: column;
 }
 
+.routeContainer{
+    height: 100%;
+}
+
 .App-logo {
     height: 40vmin;
     pointer-events: none;
