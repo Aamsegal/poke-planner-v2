@@ -5,10 +5,12 @@ import React, { useState, useEffect } from "react";
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
+import { Autocomplete } from "@mui/material";
 
 /* ---External Packages */
 
 import "./pokedexApp.css";
+import zIndex from "@mui/material/styles/zIndex";
 
 const Pokedex = require("pokeapi-js-wrapper")
 const customPokedexOptions = {
@@ -23,15 +25,30 @@ const P = new Pokedex.Pokedex(customPokedexOptions);
 
 function PokedexApp(props){
 
-    useEffect(() => {
-
-        console.log("Im Mounted")
-
-    },[])
+    const [pokemonList, setPokemonList] = useState([]);
 
     const [pokemonName, setPokemonName] = useState("");
     const [searchedForPokemonApiInfo, setSearchedForPokemonApiInfo] = useState({});
     const [abilityInfo_State, setAbilityInfo_State] = useState({});
+
+    const grabAllPokemon = async () => {
+
+        const rawPokemonList = await P.getPokemonsList();
+
+        console.log(rawPokemonList)
+
+        const cleanedPokemonList = [];
+
+        for(const currentPokemon of rawPokemonList.results) {
+
+            const currentPokemonName = currentPokemon.name;
+
+            cleanedPokemonList.push(currentPokemonName);
+        }
+
+        setPokemonList(cleanedPokemonList);
+
+    }
 
     const typeColorChart = {
         "hp": {
@@ -118,6 +135,18 @@ function PokedexApp(props){
         }
 
     };
+
+    useEffect(() => {
+
+        console.log("Im Mounted")
+
+        if(pokemonList.length === 0) {
+
+            grabAllPokemon()
+
+        }
+
+    },[])
 
     const renderPokemonInfo = () => {
 
@@ -224,13 +253,25 @@ function PokedexApp(props){
 
                 <div className="pokedexInputContainer">
 
-                    <TextField 
-                        id="outlined-basic"
-                        label="Search"
-                        variant="standard"
-                        value={pokemonName}
-                        onChange={(event) => updatePokemonSearchName(event)}
+                    <Autocomplete
+                        options={pokemonList}
+                        getOptionLabel={(option) => option}
+                        onChange={(event, value) => setPokemonName(value)}
+                        sx={{width: "50%"}}
+                        freeSolo
+                        renderInput={(params) => (
+
+                            <TextField
+                                {...params}
+                                id="outlined-basic"
+                                label="Search"
+                                variant="standard"
+                                //value={pokemonName}
+                                onChange={(event) => updatePokemonSearchName(event)}
+                            />
+                        )}
                     />
+
                     <Button 
                         variant="contained"
                         onClick={() => searchForPokemon()}

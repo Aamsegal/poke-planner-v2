@@ -54,6 +54,7 @@
 .pokemonDataText{
     margin: 0;
     margin-top: 5px;
+    text-align: left;
 }
 
 .individualStats{
