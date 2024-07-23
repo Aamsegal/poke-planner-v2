@@ -9,8 +9,10 @@ import { Autocomplete } from "@mui/material";
 
 /* ---External Packages */
 
+/* internal */
+import PokemonIcons from "../pokemonDetails/pokemonIcon/pokemonIcon";
+import PokemonAbilities from "../pokemonDetails/pokemonAbility/pokemonAbilities";
 import "./pokedexApp.css";
-import zIndex from "@mui/material/styles/zIndex";
 
 const Pokedex = require("pokeapi-js-wrapper")
 const customPokedexOptions = {
@@ -22,6 +24,16 @@ const customPokedexOptions = {
     cacheImages: true
 };
 const P = new Pokedex.Pokedex(customPokedexOptions);
+
+const maxPokemonStats = {
+    hp: 255, //blissy
+    atk: 190, //mega mewtwo X
+    def: 230, //shuckle
+    spAtk: 194, //mega mewtwo 7
+    spDef: 200, //shuckle
+    speed: 200, //regieleki
+    total: 780 //mega rayquaza
+}
 
 function PokedexApp(props){
 
@@ -162,38 +174,15 @@ function PokedexApp(props){
 
                 <div className="pokemonData">
 
-                    <div className="spriteContainer pokeInfoContainer" style={{width: "33%"}}>
+                    <PokemonIcons
+                        iconSprite={searchedForPokemonApiInfo.sprites}
+                    />
 
-                        <img src={searchedForPokemonApiInfo.sprites["front_default"]}  />
-                    
-                    </div>
-                    
-                    <div className="abilityContainer pokeInfoContainer" style={{width: "33%"}}>
-
-                        <h3 className="pokemonDataHeaders">Ability List</h3>
-
-                        {searchedForPokemonApiInfo.abilities.map((currentAbilityInfo) => {
-
-                            const abilityName = currentAbilityInfo.ability.name;
-                            const pokemonName = searchedForPokemonApiInfo.name;
-
-                            return (
-
-                                <Tooltip title={abilityInfo_State[abilityName] === undefined ? "ChockyMilk": abilityInfo_State[abilityName]}>
-
-                                    <p 
-                                        id={`${pokemonName}_${abilityName}`}
-                                        className="pokemonDataText"
-                                    >
-                                        {currentAbilityInfo.ability.name}
-                                    </p>
-
-                                </Tooltip>
-                            )
-
-                        })}
-
-                    </div>
+                    <PokemonAbilities
+                        pokemonName={searchedForPokemonApiInfo.name}
+                        pokemonAbilitiesList={searchedForPokemonApiInfo.abilities}
+                        abilityInfo={abilityInfo_State}
+                    />
 
                     <div className="typesContainer pokeInfoContainer" style={{width: "33%"}}>
 

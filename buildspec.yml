@@ -1,0 +1,28 @@
+version: 0.2
+
+phase:
+  install:
+    commands:
+      - echo Install phase starting. Installing client-side dependencies
+      - cd client
+      - npm install
+      - cd ..
+      - echo Installing server-side dependencies
+      - cd server
+      - npm install
+      - cd ..
+      - echo Install Phase Complete
+  build:
+    commands:
+      - echo Build phase started. Building React app
+      - cd client
+      - npm run build
+      - cd ..
+      - echo Build Phase Complete
+  post_build:
+    commands:
+      - echo Post Build phase starting
+      - echo Post Build phase complete
+  artifacts:
+    files:
+      - "**/*"
