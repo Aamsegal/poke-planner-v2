@@ -6,34 +6,18 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import { Autocomplete } from "@mui/material";
+import LinearProgress from '@mui/material/LinearProgress';
+import { styled } from "@mui/material/styles";
 
 /* ---External Packages */
+import axios from "axios";
 
 /* internal */
 import PokemonIcons from "../pokemonDetails/pokemonIcon/pokemonIcon";
 import PokemonAbilities from "../pokemonDetails/pokemonAbility/pokemonAbilities";
+import PokemonStats from "../pokemonDetails/pokemonStats/pokemonStats";
+import PokemonTypes from "../pokemonDetails/pokemonTypes/pokemonTypes";
 import "./pokedexApp.css";
-
-const Pokedex = require("pokeapi-js-wrapper")
-const customPokedexOptions = {
-    protocol: "https",
-    hostName: "pokeapi.co",
-    versionPath: "/api/v2/",
-    cache: true,
-    timeout: 5 * 1000, // 5s
-    cacheImages: true
-};
-const P = new Pokedex.Pokedex(customPokedexOptions);
-
-const maxPokemonStats = {
-    hp: 255, //blissy
-    atk: 190, //mega mewtwo X
-    def: 230, //shuckle
-    spAtk: 194, //mega mewtwo 7
-    spDef: 200, //shuckle
-    speed: 200, //regieleki
-    total: 780 //mega rayquaza
-}
 
 function PokedexApp(props){
 
@@ -45,49 +29,34 @@ function PokedexApp(props){
 
     const grabAllPokemon = async () => {
 
-        const rawPokemonList = await P.getPokemonsList();
+        const grabAllPokemonAxiosConfig = {
+            method: "get",
+            url: "http://localhost:8080/pokeApi/pokemonList"
+        };
 
-        console.log(rawPokemonList)
+        try{
 
-        const cleanedPokemonList = [];
+            const searchForPokemonApiResponse = await axios.request(grabAllPokemonAxiosConfig);
+            const cleanedPokemonList = [];
 
-        for(const currentPokemon of rawPokemonList.results) {
+            for(const currentPokemon of searchForPokemonApiResponse.data.results) {
 
-            const currentPokemonName = currentPokemon.name;
+                const currentPokemonName = currentPokemon.name;
 
-            cleanedPokemonList.push(currentPokemonName);
-        }
+                cleanedPokemonList.push(currentPokemonName);
+            }
 
-        setPokemonList(cleanedPokemonList);
+            setPokemonList(cleanedPokemonList);
 
-    }
+        }catch(error){
 
-    const typeColorChart = {
-        "hp": {
-            text: "HP",
-            color:"#9EE865"
-        },
-        "attack": {
-            text: "Attack",
-            color:"#F5DE69"
-        },
-        "defense": {
-            text: "Defense",
-            color:"#F09A65"
-        },
-        "special-attack": {
-            text: "Sp. Attack",
-            color:"#66D8F6"
-        },
-        "special-defense": {
-            text: "Sp. Defense",
-            color:"#899EEA"
-        },
-        "speed": {
-            text: "Speed",
-            color:"#E46CCA"
-        }
+            console.log(error)
+
+        }                
+
     };
+
+    
 
     const updatePokemonSearchName = (event) => {
 
@@ -98,19 +67,25 @@ function PokedexApp(props){
 
     const grabAbilityInfo = async (abilities) => {
 
-        console.log(abilities)
-
         const abilityInfo = {};
 
         for(const currentAbilityInfo of abilities) {
 
             const currentAbilityName = currentAbilityInfo.ability.name;
+            
+            const axiosConfig = {
+                method: "post",
+                maxBodyLength: Infinity,
+                url: "http://localhost:8080/pokeApi/grabPokemonAbilityInfo",
+                data: {
+                    pokemonAbility: currentAbilityName
+                }
+            };
 
             try{
-    
-                const searchForAbilityApiResponse = await P.getAbilityByName(currentAbilityName);
 
-                const abilityText = searchForAbilityApiResponse["effect_entries"][1].effect;
+                const searchForAbilityApiResponse = await axios.request(axiosConfig);
+                const abilityText = searchForAbilityApiResponse.data["effect_entries"][1].effect;
 
                 abilityInfo[currentAbilityName] = abilityText;
     
@@ -132,21 +107,72 @@ function PokedexApp(props){
 
         const lowerCaseName = pokemonName.toLocaleLowerCase();
 
+        const axiosConfig = {
+            method: "post",
+            maxBodyLength: Infinity,
+            url: "http://localhost:8080/pokeApi/grabPokemonInfo",
+            data: {
+                pokemonName: lowerCaseName
+            }
+        };
+
         try{
 
-            const searchForPokemonApiResponse = await P.getPokemonByName(lowerCaseName);
+            const searchForPokemonApiResponse = await axios.request(axiosConfig);
 
-            grabAbilityInfo(searchForPokemonApiResponse.abilities)
+            grabAbilityInfo(searchForPokemonApiResponse.data.abilities)
             
-            setSearchedForPokemonApiInfo(searchForPokemonApiResponse)
+            setSearchedForPokemonApiInfo(searchForPokemonApiResponse.data)
 
         }catch(error){
 
+            console.log("it broke")
             console.log(error)
 
         }
 
     };
+
+    const generateIconList = (spriteList) => {
+
+        if(spriteList !== undefined) {
+
+            const imageOrder = [
+                {imageName: "front_default", imageText: "Male"},
+                {imageName: "front_female", imageText: "Female"},
+                {imageName: "back_default", imageText: "Male"},
+                {imageName: "back_female", imageText: "Female"},
+                {imageName: "front_shiny", imageText: "Male"},
+                {imageName: "front_shiny_female", imageText: "Female"},
+                {imageName: "back_shiny", imageText: "Male"},
+                {imageName: "back_shiny_female", imageText: "Female"}
+            ];
+
+            const imageLinks = [];
+
+            for(const imageInfo of imageOrder) {
+
+                const currentImage = searchedForPokemonApiInfo.sprites[imageInfo.imageName];
+
+                if(currentImage !== null) {
+
+                    imageInfo.imageName = currentImage;
+
+                    imageLinks.push(imageInfo)
+
+                }
+                
+            };
+
+            return(imageLinks)
+
+        }else{
+
+            return([])
+            
+        }
+        
+    }
 
     useEffect(() => {
 
@@ -175,7 +201,7 @@ function PokedexApp(props){
                 <div className="pokemonData">
 
                     <PokemonIcons
-                        iconSprite={searchedForPokemonApiInfo.sprites}
+                        iconSprite={generateIconList(searchedForPokemonApiInfo.sprites)}
                     />
 
                     <PokemonAbilities
@@ -183,49 +209,11 @@ function PokedexApp(props){
                         pokemonAbilitiesList={searchedForPokemonApiInfo.abilities}
                         abilityInfo={abilityInfo_State}
                     />
-
-                    <div className="typesContainer pokeInfoContainer" style={{width: "33%"}}>
-
-                        <h3 className="pokemonDataHeaders">Types</h3>
-                        {searchedForPokemonApiInfo.types.map((types) => {
-
-                            return (
-                                <p 
-                                    id={`${searchedForPokemonApiInfo.name}_${types.type.name}`}
-                                    key={`${searchedForPokemonApiInfo.name}_${types.type.name}`}
-                                    className="pokemonDataText"
-                                >
-                                    {types.type.name}
-                                </p>
-                            )
-
-                        })}
-
-                    </div>
-
-                    <div className="statsContainer pokeInfoContainer" style={{backgroundColor: "#3D3D3D", width: "33%"}}>
-
-                        <h3 className="pokemonDataHeaders">Stats</h3>
-                        <div className="individualStats">
-
-                            {searchedForPokemonApiInfo.stats.map((stats) => {
-                                return (
-                                    <p 
-                                        id={`${searchedForPokemonApiInfo.name}_${stats["base_stat"]}`}
-                                        className="pokemonDataText"
-                                        style={{
-                                            color: typeColorChart[stats.stat.name].color,
-                                            fontWeight: "bold"
-                                        }}
-                                    >
-                                        {typeColorChart[stats.stat.name].text} - {stats["base_stat"]}
-                                    </p>
-                                )
-                            })}
-
-                        </div>
-
-                    </div>                    
+                    
+                    <PokemonTypes
+                        pokemonName={searchedForPokemonApiInfo.name}
+                        types={searchedForPokemonApiInfo.types}
+                    />       
 
                 </div>
 
@@ -273,6 +261,10 @@ function PokedexApp(props){
                 <div className="pokemonInfoDisplayContainer">
 
                     {renderPokemonInfo()}
+
+                    <PokemonStats 
+                        searchedForPokemonApiInfo={searchedForPokemonApiInfo}
+                    />
 
                 </div>
 

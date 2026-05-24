@@ -1,0 +1,25 @@
+.statsContainer{
+    text-align: center;
+    width: 95%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.individualStatContainer{
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.pokemonDataText{
+    margin: 0;
+    text-align: left;
+}
+
+.individualStats{
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.spriteToggle{
+    display: inline;
+}

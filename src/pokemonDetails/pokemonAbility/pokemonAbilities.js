@@ -3,9 +3,7 @@ import React from "react";
 import ToolTips from "../../toolTips/tooltips";
 
 function PokemonAbilities(props) {
-
-    console.log(props)
-
+    
     return(
 
         <div className="abilityContainer pokeInfoContainer" style={{width: "33%"}}>
@@ -23,11 +21,9 @@ function PokemonAbilities(props) {
                 return (
 
                     <ToolTips
-
+                        key={`${pokemonName}_${abilityName}`}
                         abilityInfo={abilityInfo}
                         pokemonName={pokemonName}
-
-
                     />
                     
                 )

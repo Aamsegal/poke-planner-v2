@@ -7,6 +7,8 @@ const helmet = require("helmet"); //Helps secure Express apps by setting HTTP re
 const cors = require("cors"); //Enables CORS headers which only allows api calls from itself 
 const rateLimit = require("express-rate-limit"); //Can limit the number of requests made to the server and return an error of accessed too much (load balancer does this too)
 
+/* ---Routes--- */
+const pokeApiRoute = require("./pokeApi/pokeApiEndpoint");
 
 const PORT = process.env.PORT || 8080;
 
@@ -40,6 +42,8 @@ app.use(globalRateLimit);
 
 app.use(express.static(path.join(__dirname, "../build")));
 
+app.use("/pokeApi", pokeApiRoute)
+
 app.get("/api", (req, res) => {
 
     const requestBody = req.body;
@@ -50,6 +54,8 @@ app.get("/api", (req, res) => {
     res.json({message: `Get on base server was successful! Currently running on port - ${PORT}`})
 
 });
+
+
 
 /* all non accepted endpoints redirect to getting the route from our react app */
 app.get("*",(req, res) => {

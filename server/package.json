@@ -4,7 +4,9 @@
         "express": "^4.19.2",
         "express-rate-limit": "^7.3.1",
         "helmet": "^7.1.0",
-        "nodemon": "^3.1.4"
+        "nodemon": "^3.1.4",
+        "pokedex-promise-v2": "^4.2.0",
+        "xss": "^1.0.15"
     },
     "scripts": {
         "dev": "nodemon app"
